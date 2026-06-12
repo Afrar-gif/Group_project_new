@@ -1,0 +1,182 @@
+<html>
+<html lang="en">
+
+<head>
+    <title>User Login</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #173845;
+            height: 100vh;
+        }
+
+        .navbar {
+            width: 100%;
+            height: 70px;
+            background: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: red;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 12px;
+        }
+
+        .main {
+            height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 340px;
+            background: #ddd;
+            border-radius: 30px;
+            padding: 40px 35px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #000;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #777;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            background: #22d8ff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .register-link a {
+            color: #22d8ff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">EDL</div>
+
+        
+    </div>
+
+    <div class="main">
+
+        <div class="login-box">
+
+            <h2>User Login</h2>
+
+            <form action="userL.php" method="POST" onsubmit="return validateLogin()">
+
+                <div class="input-group">
+                    <input type="text" id="account" name="account"
+                    placeholder="Account Number (CEB)">
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password"
+                    placeholder="Password">
+                </div>
+
+             <form action="outage_schedule.php" method="POST">
+    
+    <button type="submit" class="btn">
+        Login
+    </button>
+</form>
+
+            </form>
+
+            <div class="register-link">
+
+                <a href="userR.html">
+                    Don't have an account? Register
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function validateLogin(){
+
+            let account =
+            document.getElementById("account").value;
+
+            let password =
+            document.getElementById("password").value;
+
+            if(account == "" || password == ""){
+                alert("Fill All Fields");
+                return false;
+            }
+
+            if(isNaN(account)){
+                alert("Account Number Must Be Numeric");
+                return false;
+            }
+
+            if(password.length < 6){
+                alert("Password Must Be Minimum 6 Characters");
+                return false;
+            }
+
+            return true;
+
+        }
+
+    </script>
+
+</body>
+</html>
