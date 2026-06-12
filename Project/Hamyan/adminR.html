@@ -1,0 +1,285 @@
+<html>
+    
+<head>
+    <title>Admin Register</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #173845;
+            height: 100vh;
+        }
+
+        
+
+        .navbar {
+            width: 100%;
+            height: 70px;
+            background: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: red;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 12px;
+        }
+
+        
+
+        .main {
+            height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        
+
+        .register-box {
+            width: 340px;
+            background: #ddd;
+            border-radius: 30px;
+            padding: 35px;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+        }
+
+        .register-box h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #000;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #777;
+            background: transparent;
+            outline: none;
+            font-size: 13px;
+        }
+
+        
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            background: #22d8ff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #12c3e8;
+            transform: scale(1.02);
+        }
+
+        
+
+        .login-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .login-link a {
+            color: #22d8ff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    
+
+    <div class="navbar">
+
+        <div class="logo">EDL</div>
+
+        
+    </div>
+
+    <!-- MAIN -->
+
+    <div class="main">
+
+        <div class="register-box">
+
+            <h2>Admin Register</h2>
+
+         
+
+            <form action="adminR.php"method="POST" onsubmit="return validateAdminRegister()">
+
+                <div class="input-group">
+
+                    <input type="text"
+                    id="name"
+                    name="name"
+                    placeholder="Name"
+                    required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <input type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <input type="text"
+                    id="idnumber"
+                    name="idnumber"
+                    placeholder="Id Number"
+                    required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <input type="password"
+                    id="secretkey"
+                    name="secretkey"
+                    placeholder="Admin Secrete Key"
+                    required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <input type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create Password"
+                    required>
+
+                </div>
+
+                <button class="btn" type="submit">
+
+                    Create
+
+                </button>
+
+            </form>
+
+            <div class="login-link">
+
+                <a href="adminL.html">
+
+                    Click Login
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        function validateAdminRegister(){
+
+            let name =
+            document.getElementById("name").value;
+
+            let email =
+            document.getElementById("email").value;
+
+            let idnumber =
+            document.getElementById("idnumber").value;
+
+            let secretkey =
+            document.getElementById("secretkey").value;
+
+            let password =
+            document.getElementById("password").value;
+
+            // EMPTY CHECK
+
+            if(name == "" || email == "" ||
+            idnumber == "" || secretkey == "" ||
+            password == ""){
+
+                alert("All Fields Must Be Filled");
+                return false;
+            }
+
+            // EMAIL CHECK
+
+            if(!email.includes("@")){
+
+                alert("Enter Valid Email");
+                return false;
+            }
+
+            // PASSWORD CHECK
+
+            if(password.length < 6){
+
+                alert("Password Must Be Minimum 6 Characters");
+                return false;
+            }
+
+            return true;
+
+        }
+
+    </script>
+
+</body>
+</html>
