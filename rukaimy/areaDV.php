@@ -8,7 +8,6 @@ $result = mysqli_query($conn, $sql);
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <title>View Areas</title>
 
 <style>
@@ -85,7 +84,7 @@ tr:nth-child(even){
     color:white;
 }
 
-/* GREEN ACTION BUTTON STYLE */
+/* NAANE ADD SEITHA GREEN ACTION BUTTON STYLE */
 .action-btn {
     background-color: #10b981;
     color: white;
@@ -128,8 +127,7 @@ tr:nth-child(even){
     <th>City</th>
     <th>Area</th>
     <th>Transformer</th>
-    <th>Action</th> 
-</tr>
+    <th>Action</th> </tr>
 
 <?php
 if(mysqli_num_rows($result) > 0){
@@ -143,15 +141,16 @@ if(mysqli_num_rows($result) > 0){
     <td><?php echo $row['area']; ?></td>
     <td><?php echo $row['transformer']; ?></td>
     <td>
-        <a href="../rukaimy/create_alert.php?area_id=<?php echo $row['id']; ?>&area=<?php echo urlencode($row['area']); ?>" class="action-btn">
-            ➕ Schedule Alert
-        </a>
+       <a href="create_alert.php?area=<?php echo urlencode($row['area']); ?>" class="action-btn">
+    ➕ Schedule Alert
+</a>
     </td>
 </tr>
 
 <?php
     }
 } else {
+    // Colspan column adathirkaha 6 aaha maatriyullen
     echo "<tr><td colspan='6' class='no-data'>No Data Found</td></tr>";
 }
 ?>

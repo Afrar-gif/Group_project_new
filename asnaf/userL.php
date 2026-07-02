@@ -1,8 +1,62 @@
-<html>
+<?php
+// ✅ 'asnaf' foldere-il ulla db.php file include cheyyunnu
+include "db.php";
+
+// CHECK FORM SUBMIT
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+
+    // GET FORM DATA
+    $account = trim($_POST['account']);
+    $password = trim($_POST['password']);
+
+    // EMPTY CHECK
+    if(empty($account) || empty($password)){
+        echo "
+        <script>
+            alert('All Fields Are Required');
+            window.location.href='userL.php';
+        </script>
+        ";
+        exit();
+    }
+
+    // 🛠️ DATABASE ANALYSIS PRAKARAM COLUMN PEERU 'account_number' ENNAKI MAATTIDUNDU
+    $sql = "SELECT * FROM users 
+            WHERE account_number='$account' 
+            AND password='$password'";
+
+    $result = mysqli_query($conn, $sql);
+
+    // CHECK LOGIN SUCCESS
+    if(mysqli_num_rows($result) > 0){
+        // ✅ Login success aayall 'rukaimy' folder-ile 'outage_schedule.php'-lekk povanulla path
+        echo "
+        <script>
+            alert('User Login Successful');
+            window.location.href='../rukaimy/outage_schedule.php';
+        </script>
+        ";
+        exit();
+    }
+    else{
+        // Login fail aayall pinneyum ithe page-lekk thirich varan
+        echo "
+        <script>
+            alert('Invalid Account Number or Password');
+            window.location.href='userL.php';
+        </script>
+        ";
+        exit();
+    }
+}
+?>
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <title>User Login</title>
+    <meta charset="UTF-8">
+    <title>User Login1</title>
 
     <style>
         * {
@@ -13,8 +67,7 @@
         }
 
         body {
-            background: #173845;
-            height: 100vh;
+             background-image:url("Background.avif");
         }
 
         .navbar {
@@ -104,8 +157,6 @@
 
     <div class="navbar">
         <div class="logo">EDL</div>
-
-        
     </div>
 
     <div class="main">
@@ -126,21 +177,16 @@
                     placeholder="Password">
                 </div>
 
-             <form action="outage_schedule.php" method="POST">
-    
-    <button type="submit" class="btn">
-        Login
-    </button>
-</form>
+                <button type="submit" class="btn">
+                    Login
+                </button>
 
             </form>
 
             <div class="register-link">
-
                 <a href="userR.html">
                     Don't have an account? Register
                 </a>
-
             </div>
 
         </div>
@@ -148,14 +194,9 @@
     </div>
 
     <script>
-
         function validateLogin(){
-
-            let account =
-            document.getElementById("account").value;
-
-            let password =
-            document.getElementById("password").value;
+            let account = document.getElementById("account").value;
+            let password = document.getElementById("password").value;
 
             if(account == "" || password == ""){
                 alert("Fill All Fields");
@@ -173,9 +214,7 @@
             }
 
             return true;
-
         }
-
     </script>
 
 </body>

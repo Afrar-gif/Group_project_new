@@ -1,35 +1,221 @@
 <?php
-
+// ✅ 'asnaf' foldere-il ulla db.php file include cheyyunnu
 include "db.php";
 
-$account = $_POST['account'];
-$password = $_POST['password'];
+// CHECK FORM SUBMIT
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-$sql = "SELECT * FROM users 
-WHERE account_number='$account'
-AND password='$password'";
+    // GET FORM DATA
+    $account = trim($_POST['account']);
+    $password = trim($_POST['password']);
 
-$result = mysqli_query($conn, $sql);
+    // EMPTY CHECK
+    if(empty($account) || empty($password)){
+        echo "
+        <script>
+            alert('All Fields Are Required');
+            window.location.href='userL.php';
+        </script>
+        ";
+        exit();
+    }
 
-if(mysqli_num_rows($result) > 0){
+    // 🛠️ DATABASE ANALYSIS PRAKARAM COLUMN PEERU 'account_number' ENNAKI MAATTIDUNDU
+    $sql = "SELECT * FROM users 
+            WHERE account_number='$account' 
+            AND password='$password'";
 
-    echo "
-    <script>
-        alert('Login Successful');
-        window.location.href='outage_schedule.php';
-    </script>
-    ";
+    $result = mysqli_query($conn, $sql);
 
+    // CHECK LOGIN SUCCESS
+    if(mysqli_num_rows($result) > 0){
+        // ✅ Login success aayall 'rukaimy' folder-ile 'outage_schedule.php'-lekk povanulla path
+        echo "
+        <script>
+            alert('User Login Successful');
+            window.location.href='../rukaimy/outage_schedule.php';
+        </script>
+        ";
+        exit();
+    }
+    else{
+        // Login fail aayall pinneyum ithe page-lekk thirich varan
+        echo "
+        <script>
+            alert('Invalid Account Number or Password');
+            window.location.href='userL.php';
+        </script>
+        ";
+        exit();
+    }
 }
-else{
-
-    echo "
-    <script>
-        alert('Invalid Account Number or Password');
-        window.location.href='userL.html';
-    </script>
-    ";
-
-}
-
 ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Login1</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+             background-image:url("Background.avif");
+        }
+
+        .navbar {
+            width: 100%;
+            height: 70px;
+            background: #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            color: red;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 12px;
+        }
+
+        .main {
+            height: calc(100vh - 70px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 340px;
+            background: #ddd;
+            border-radius: 30px;
+            padding: 40px 35px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #000;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #777;
+            background: transparent;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 20px;
+            background: #22d8ff;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .register-link a {
+            color: #22d8ff;
+            text-decoration: none;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <div class="logo">EDL</div>
+    </div>
+
+    <div class="main">
+
+        <div class="login-box">
+
+            <h2>User Login</h2>
+
+            <form action="userL.php" method="POST" onsubmit="return validateLogin()">
+
+                <div class="input-group">
+                    <input type="text" id="account" name="account"
+                    placeholder="Account Number (CEB)">
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" name="password"
+                    placeholder="Password">
+                </div>
+
+                <button type="submit" class="btn">
+                    Login
+                </button>
+
+            </form>
+
+            <div class="register-link">
+                <a href="userR.html">
+                    Don't have an account? Register
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function validateLogin(){
+            let account = document.getElementById("account").value;
+            let password = document.getElementById("password").value;
+
+            if(account == "" || password == ""){
+                alert("Fill All Fields");
+                return false;
+            }
+
+            if(isNaN(account)){
+                alert("Account Number Must Be Numeric");
+                return false;
+            }
+
+            if(password.length < 6){
+                alert("Password Must Be Minimum 6 Characters");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+
+</body>
+</html>

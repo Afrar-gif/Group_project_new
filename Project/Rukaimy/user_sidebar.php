@@ -8,6 +8,7 @@
     <li><a href="emergency_report.php" id="nav-hazard"><i class="fa fa-triangle-exclamation"></i> Hazard Report</a></li>
     <li><a href="user_profile.php" id="nav-profile"><i class="fa fa-user-gear"></i> Account Settings</a></li>
     <li><a href="../index.php"><i class="fa fa-sign-out-alt"></i> Secure Logout</a></li>
+   
   </ul>
 </div>
 

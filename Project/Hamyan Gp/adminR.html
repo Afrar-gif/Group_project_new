@@ -144,8 +144,6 @@
         
     </div>
 
-    <!-- MAIN -->
-
     <div class="main">
 
         <div class="register-box">
@@ -228,8 +226,6 @@
 
     </div>
 
-    <!-- JAVASCRIPT -->
-
     <script>
 
         function validateAdminRegister(){
@@ -249,8 +245,6 @@
             let password =
             document.getElementById("password").value;
 
-            // EMPTY CHECK
-
             if(name == "" || email == "" ||
             idnumber == "" || secretkey == "" ||
             password == ""){
@@ -259,15 +253,11 @@
                 return false;
             }
 
-            // EMAIL CHECK
-
             if(!email.includes("@")){
 
                 alert("Enter Valid Email");
                 return false;
             }
-
-            // PASSWORD CHECK
 
             if(password.length < 6){
 

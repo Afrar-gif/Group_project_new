@@ -1,6 +1,24 @@
 <?php
 include "db.php";
 
+// 🗑️ INLINE DELETE LOGIC (தனி ஃபைல் இல்லாமல் இங்கேயே டெலீட் செய்யும் பகுதி)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    header('Content-Type: application/json');
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        $query = "DELETE FROM power_alerts WHERE id = $id";
+        
+        if (mysqli_query($conn, $query)) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'No ID provided']);
+    }
+    exit; // டெலீட் ரெஸ்பான்ஸ் அனுப்பிய பின் கீழே உள்ள HTML ரன் ஆகாமல் தடுக்க
+}
+
 /* TOTAL USERS */
 $user_sql = "SELECT COUNT(*) as total_users FROM users";
 $user_result = mysqli_query($conn, $user_sql);
@@ -207,7 +225,7 @@ $total_active_alerts = $active_alerts_data['total_active'];
     <li><a href="#"><i class="fa fa-bolt"></i> Alerts</a></li>
     <li><a href="#"><i class="fa fa-comment"></i> Complaints</a></li>
     <li><a href="#"><i class="fa fa-bell"></i> Notifications</a></li>
-    <li><a href="adminL.html"><i class="fa fa-right-from-bracket"></i> Logout</a></li>
+    <li><a href="adminL.php"><i class="fa fa-right-from-bracket"></i> Logout</a></li>
   </ul>
 </div>
 
@@ -308,7 +326,6 @@ $total_active_alerts = $active_alerts_data['total_active'];
   </div>
 
 </div>
-
 <script>
 // ✉️ BROADCAST ALERTS DISPATCH ENGINE
 function sendSystemAlert(buttonElement, areaName, cutDate, cutTime) {
@@ -319,7 +336,8 @@ function sendSystemAlert(buttonElement, areaName, cutDate, cutTime) {
     buttonElement.disabled = true;
     buttonElement.innerHTML = '<i class="fa fa-spinner fa-spin" style="font-size:14px; color:white; margin:0;"></i> Sending...';
 
-    fetch('send_alerts_process.php', {
+    // PATH CHANGED HERE: Thanseer ஃபோல்டரிலிருந்து வெளியேறி rukaimy ஃபோல்டருக்குள் செல்கிறது
+    fetch('../rukaimy/send_alerts_process.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -346,24 +364,23 @@ function sendSystemAlert(buttonElement, areaName, cutDate, cutTime) {
     });
 }
 
-// 🗑️ AJAX LIVE DELETE ENGINE (உங்க ஒரிஜினல் ஃபீடில் இணைக்கப்பட்டது தலா)
+// 🗑️ AJAX LIVE DELETE ENGINE
 function deleteSystemAlert(alertId) {
     if (!confirm("Are you sure you want to permanently delete this power cut alert?")) {
         return;
     }
 
-    fetch('delete_alert.php', {
+    fetch('dashboard.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${alertId}`
+        body: `action=delete&id=${alertId}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
             alert("✅ Alert deleted successfully!");
-            // பேஜ் ரீஃப்ரெஷ் ஆகாமல் அந்த ரோவை மட்டும் அப்படியே மறைக்கிறோம் தலா
             document.getElementById(`row_${alertId}`).remove(); 
         } else {
             alert("❌ Error: " + data.message);

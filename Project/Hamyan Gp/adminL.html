@@ -1,7 +1,10 @@
 <html>
-<html lang="en">
 <head>
-    <title>User Register</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login</title>
 
     <style>
 
@@ -13,11 +16,11 @@
         }
 
         body{
-             background-image:url("Background.avif");
-
+            background:#173845;
+            height:100vh;
         }
 
-        /* NAVBAR */
+        
 
         .navbar{
             width:100%;
@@ -42,7 +45,7 @@
             font-size:12px;
         }
 
-        /* MAIN */
+        
 
         .main{
             height:calc(100vh - 70px);
@@ -51,36 +54,51 @@
             align-items:center;
         }
 
-        /* REGISTER BOX */
+        
 
-        .register-box{
+        .login-box{
             width:340px;
             background:#ddd;
             border-radius:30px;
-            padding:35px;
+            padding:40px 35px;
+            animation:fadeIn 0.6s ease-in-out;
         }
 
-        .register-box h2{
+        @keyframes fadeIn{
+
+            from{
+                opacity:0;
+                transform:translateY(-10px);
+            }
+
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+
+        }
+
+        .login-box h2{
             text-align:center;
             margin-bottom:25px;
             color:#000;
         }
 
         .input-group{
-            margin-bottom:15px;
+            margin-bottom:20px;
         }
 
         .input-group input{
             width:100%;
-            padding:10px;
+            padding:12px;
             border:none;
             border-bottom:1px solid #777;
             background:transparent;
             outline:none;
-            font-size:13px;
+            font-size:14px;
         }
 
-        /* BUTTON */
+       
 
         .btn{
             width:100%;
@@ -93,20 +111,22 @@
             font-weight:bold;
             cursor:pointer;
             margin-top:10px;
+            transition:0.3s;
         }
 
         .btn:hover{
             background:#12c3e8;
+            transform:scale(1.02);
         }
 
-        /* LOGIN LINK */
+       
 
-        .login-link{
+        .register-link{
             text-align:center;
-            margin-top:10px;
+            margin-top:15px;
         }
 
-        .login-link a{
+        .register-link a{
             color:#22d8ff;
             text-decoration:none;
             font-size:12px;
@@ -115,9 +135,10 @@
     </style>
 
 </head>
+
 <body>
 
-    <!-- NAVBAR -->
+    
 
     <div class="navbar">
 
@@ -126,48 +147,62 @@
 
     </div>
 
-    <!-- MAIN -->
+    
 
     <div class="main">
 
-        <div class="register-box">
+        <div class="login-box">
 
-            <h2>Register</h2>
+            <h2>Admin Login</h2>
 
-            <form action="userR.php" method="POST" onsubmit="return validateForm()">
+            <form action="adminL.php"
+                  method="POST"
+                  onsubmit="return validateAdminLogin()">
 
-                <div class="input-group">
-                    <input type="text" id="name" name="name" placeholder="Name" required>
+                  <div class="input-group">
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="email"
+                           required>
+
                 </div>
 
                 <div class="input-group">
-                    <input type="email" id="email" name="email" placeholder="Email" required>
+
+                    <input type="text"
+                           id="secretkey"
+                           name="secretkey"
+                           placeholder="Security Key"
+                           required>
+
                 </div>
 
                 <div class="input-group">
-                    <input type="text" id="area" name="area" placeholder="Area" required>
+
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="Password"
+                           required>
+
                 </div>
 
-                <div class="input-group">
-                    <input type="text" id="account" name="account" placeholder="Account Number (CEB)" required>
-                </div>
+                <button type="submit" class="btn">
 
-                <div class="input-group">
-                    <input type="password" id="password" name="password" placeholder="Create Password" required>
-                </div>
+                    Login
 
-          <a href="userL.php">
-    <button class="btn" type="button" name="create">
-        Create
-    </button>
-</a>
+                </button>
 
             </form>
 
-            <div class="login-link">
+            <div class="register-link">
 
-                <a href="userL.php">
-                    Click Login
+                <a href="adminR.html">
+
+                    Don't have an account? Register
+
                 </a>
 
             </div>
@@ -176,44 +211,34 @@
 
     </div>
 
-    <!-- JAVASCRIPT -->
+    
 
     <script>
 
-        function validateForm(){
+        function validateAdminLogin(){
 
-            let name = document.getElementById("name").value;
-            let email = document.getElementById("email").value;
-            let area = document.getElementById("area").value;
-            let account = document.getElementById("account").value;
-            let password = document.getElementById("password").value;
+            let secretkey =
+            document.getElementById("secretkey").value.trim();
 
-            // EMPTY CHECK
+            let password =
+            document.getElementById("password").value.trim();
 
-            if(name == "" || email == "" || area == "" || account == "" || password == ""){
+           
+
+            if(secretkey === "" || password === ""){
+
                 alert("All Fields Must Be Filled");
                 return false;
+
             }
 
-            // EMAIL CHECK
-
-            if(!email.includes("@")){
-                alert("Enter Valid Email");
-                return false;
-            }
-
-            // ACCOUNT NUMBER CHECK
-
-            if(isNaN(account)){
-                alert("Account Number Must Be Number");
-                return false;
-            }
-
-            // PASSWORD LENGTH
+            
 
             if(password.length < 6){
+
                 alert("Password Must Be Minimum 6 Characters");
                 return false;
+
             }
 
             return true;
@@ -223,4 +248,5 @@
     </script>
 
 </body>
+
 </html>

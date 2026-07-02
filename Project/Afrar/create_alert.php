@@ -1,66 +1,70 @@
 <?php
 include "db.php";
 
-$area_name = '';
-$date_val = '';
-$start_time_val = '';
-$end_time_val = '';
-$status_val = 'Pending';
-$is_edit = false;
-$edit_id = '';
+$edit_mode = false;
+$alert_id = '';
+$area = '';
+$date = '';
+$time = '';
+$status = 'Pending';
 
-/* EDIT MODE */
-if (isset($_GET['edit_id'])) {
-    $is_edit = true;
-    $edit_id = mysqli_real_escape_string($conn, $_GET['edit_id']);
+/* ===========================
+   EDIT MODE - Fetch existing data to auto fill
+=========================== */
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $edit_mode = true;
+    $alert_id = intval($_GET['id']);
 
-    $sql = "SELECT * FROM power_alerts WHERE id='$edit_id'";
-    $res = mysqli_query($conn, $sql);
+    $fetch_sql = "SELECT * FROM power_alerts WHERE id = $alert_id";
+    $fetch_result = mysqli_query($conn, $fetch_sql);
 
-    if ($row = mysqli_fetch_assoc($res)) {
-        $area_name = $row['area'];
-        $date_val = $row['date'];
-        $start_time_val = $row['start_time'];
-        $end_time_val = $row['end_time'];
-        $status_val = $row['status'];
+    if ($fetch_result && mysqli_num_rows($fetch_result) > 0) {
+        $row = mysqli_fetch_assoc($fetch_result);
+        $area   = $row['area'];
+        $date   = $row['date'];
+        $time   = $row['time'];
+        $status = $row['status'];
+    } else {
+        // Invalid ID - redirect back
+        header("Location: dashboard.php");
+        exit;
     }
 }
 
-/* NEW INSERT MODE */
-else if (isset($_GET['area'])) {
-    $area_name = mysqli_real_escape_string($conn, $_GET['area']);
-}
+/* ===========================
+   FORM SUBMIT - Insert or Update
+=========================== */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-/* SUBMIT */
-if (isset($_POST['submit_alert'])) {
-
-    $area = mysqli_real_escape_string($conn, $_POST['area']);
-    $date = mysqli_real_escape_string($conn, $_POST['date']);
-    $start_time = mysqli_real_escape_string($conn, $_POST['start_time']);
-    $end_time = mysqli_real_escape_string($conn, $_POST['end_time']);
+    $area   = mysqli_real_escape_string($conn, $_POST['area']);
+    $date   = mysqli_real_escape_string($conn, $_POST['date']);
+    $time   = mysqli_real_escape_string($conn, $_POST['time']);
     $status = mysqli_real_escape_string($conn, $_POST['status']);
 
-    if ($is_edit) {
+    if (isset($_POST['alert_id']) && !empty($_POST['alert_id'])) {
+        // UPDATE existing record
+        $id = intval($_POST['alert_id']);
+        $update_sql = "UPDATE power_alerts 
+                       SET area = '$area', date = '$date', time = '$time', status = '$status' 
+                       WHERE id = $id";
 
-        $sql = "UPDATE power_alerts SET 
-                date='$date',
-                start_time='$start_time',
-                end_time='$end_time',
-                status='$status'
-                WHERE id='$edit_id'";
-
-        mysqli_query($conn, $sql);
-        echo "<script>alert('✅ Updated Successfully'); window.location.href='dashboard.php';</script>";
-
+        if (mysqli_query($conn, $update_sql)) {
+            header("Location: dashboard.php?msg=updated");
+            exit;
+        } else {
+            $error = "Update failed: " . mysqli_error($conn);
+        }
     } else {
+        // INSERT new record
+        $insert_sql = "INSERT INTO power_alerts (area, date, time, status) 
+                       VALUES ('$area', '$date', '$time', '$status')";
 
-        $sql = "INSERT INTO power_alerts 
-        (area, date, start_time, end_time, status)
-        VALUES
-        ('$area', '$date', '$start_time', '$end_time', '$status')";
-
-        mysqli_query($conn, $sql);
-        echo "<script>alert('✅ Alert Created Successfully'); window.location.href='dashboard.php';</script>";
+        if (mysqli_query($conn, $insert_sql)) {
+            header("Location: dashboard.php?msg=added");
+            exit;
+        } else {
+            $error = "Insert failed: " . mysqli_error($conn);
+        }
     }
 }
 ?>
@@ -68,90 +72,142 @@ if (isset($_POST['submit_alert'])) {
 <!DOCTYPE html>
 <html>
 <head>
-<title><?php echo $is_edit ? "Edit Alert" : "Create Alert"; ?></title>
+  <title><?php echo $edit_mode ? "Edit Power Cut Alert" : "Add New Power Cut Alert"; ?></title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 
-<style>
-body{
-    font-family: Arial;
-    background:#173845;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-}
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-.form-box{
-    background:white;
-    padding:25px;
-    width:400px;
-    border-radius:12px;
-}
+    body {
+      background: #f4f7fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-h2{
-    text-align:center;
-    margin-bottom:15px;
-}
+    .form-container {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      padding: 35px;
+      border-radius: 15px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    }
 
-input, select{
-    width:100%;
-    padding:10px;
-    margin-bottom:12px;
-    border:1px solid #ccc;
-    border-radius:6px;
-}
+    .form-container h2 {
+      margin-bottom: 25px;
+      color: #0077b6;
+      text-align: center;
+    }
 
-button{
-    width:100%;
-    padding:10px;
-    background:#0077b6;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
+    .form-group {
+      margin-bottom: 18px;
+    }
 
-button:hover{
-    background:#005a8c;
-}
-</style>
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #0077b6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background: #023e8a;
+    }
+
+    .btn-back {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #555;
+      text-align: center;
+      width: 100%;
+    }
+
+    .error-msg {
+      background: #fee2e2;
+      color: #b91c1c;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="form-box">
+  <div class="form-container">
+    <h2><?php echo $edit_mode ? "Edit Power Cut Alert" : "Add New Power Cut Alert"; ?></h2>
 
-<h2>⚡ <?php echo $is_edit ? "Edit Alert" : "Create Alert"; ?></h2>
+    <?php if (isset($error)): ?>
+      <div class="error-msg"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
 
-<form method="POST">
+    <form method="POST" action="create_alert.php">
 
-    <input type="text" name="area"
-    value="<?php echo htmlspecialchars($area_name); ?>"
-    readonly>
+      <?php if ($edit_mode): ?>
+        <input type="hidden" name="alert_id" value="<?php echo htmlspecialchars($alert_id); ?>">
+      <?php endif; ?>
 
-    <input type="date" name="date"
-    value="<?php echo $date_val; ?>" required>
+      <div class="form-group">
+        <label>Area</label>
+        <input type="text" name="area" value="<?php echo htmlspecialchars($area); ?>" required>
+      </div>
 
-    <label>Start Time</label>
-    <input type="time" name="start_time"
-    value="<?php echo $start_time_val; ?>" required>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" name="date" value="<?php echo htmlspecialchars($date); ?>" required>
+      </div>
 
-    <label>End Time</label>
-    <input type="time" name="end_time"
-    value="<?php echo $end_time_val; ?>" required>
+      <div class="form-group">
+        <label>Time</label>
+        <input type="time" name="time" value="<?php echo htmlspecialchars($time); ?>" required>
+      </div>
 
-    <select name="status" required>
-        <option value="Pending" <?php if($status_val=='Pending') echo 'selected'; ?>>Pending</option>
-        <option value="In Progress" <?php if($status_val=='In Progress') echo 'selected'; ?>>In Progress</option>
-        <option value="Finished" <?php if($status_val=='Finished') echo 'selected'; ?>>Finished</option>
-    </select>
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status" required>
+          <option value="Pending" <?php echo ($status === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+          <option value="In Progress" <?php echo ($status === 'In Progress') ? 'selected' : ''; ?>>In Progress</option>
+          <option value="Completed" <?php echo ($status === 'Completed') ? 'selected' : ''; ?>>Completed</option>
+        </select>
+      </div>
 
-    <button type="submit" name="submit_alert">
-        <?php echo $is_edit ? "Update Alert" : "Create Alert"; ?>
-    </button>
+      <button type="submit" class="btn-submit">
+        <?php echo $edit_mode ? "Update Alert" : "Add Alert"; ?>
+      </button>
 
-</form>
+      <a href="../Thanseer/dashboard.php" class="btn-back">← Back to Dashboard</a>
 
-</div>
+    </form>
+  </div>
 
 </body>
 </html>

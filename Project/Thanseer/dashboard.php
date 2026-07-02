@@ -1,6 +1,24 @@
 <?php
 include "db.php";
 
+// 🗑️ INLINE DELETE LOGIC
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+    header('Content-Type: application/json');
+    if (isset($_POST['id'])) {
+        $id = intval($_POST['id']);
+        $query = "DELETE FROM power_alerts WHERE id = $id";
+        
+        if (mysqli_query($conn, $query)) {
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'No ID provided']);
+    }
+    exit; // டெலீட் ரெஸ்பான்ஸ் அனுப்பிய பின் கீழே உள்ள HTML ரன் ஆகாமல் தடுக்க
+}
+
 /* TOTAL USERS */
 $user_sql = "SELECT COUNT(*) as total_users FROM users";
 $user_result = mysqli_query($conn, $user_sql);
@@ -200,14 +218,14 @@ $total_active_alerts = $active_alerts_data['total_active'];
 
   <ul>
     <li><a href="#"><i class="fa fa-home"></i> Dashboard</a></li>
-    <li><a href="users.php"><i class="fa fa-users"></i> Users</a></li>
-    <li><a href="staff.php"><i class="fa fa-users"></i> Staff</a></li>
-    <li><a href="area.php"><i class="fa fa-location-dot"></i> Add Areas</a></li>
-    <li><a href="areaDV.php"><i class="fa fa-eye"></i> Area Details</a></li>
+    <li><a href="../rukaimy/users.php"><i class="fa fa-users"></i> Users</a></li>
+    <li><a href="../rukaimy/staff.php"><i class="fa fa-users"></i> Staff</a></li>
+    <li><a href="../Afrar/area.php"><i class="fa fa-location-dot"></i> Add Areas</a></li>
+    <li><a href="../Afrar/areaDV.php"><i class="fa fa-eye"></i> Area Details</a></li>
     <li><a href="#"><i class="fa fa-bolt"></i> Alerts</a></li>
     <li><a href="#"><i class="fa fa-comment"></i> Complaints</a></li>
     <li><a href="#"><i class="fa fa-bell"></i> Notifications</a></li>
-    <li><a href="adminL.html"><i class="fa fa-right-from-bracket"></i> Logout</a></li>
+    <li><a href="../Hamyan GP/adminL.php"><i class="fa fa-right-from-bracket"></i> Logout</a></li>
   </ul>
 </div>
 
@@ -255,7 +273,7 @@ $total_active_alerts = $active_alerts_data['total_active'];
   <div class="table-section">
     <h2>Power Cut Alerts</h2>
 
-    <a href="areaDV.php" style="text-decoration: none;">
+    <a href="../Afrar/areaDV.php" style="text-decoration: none;">
         <button class="add-btn">Add New Alert</button>
     </a>
 
@@ -287,7 +305,7 @@ $total_active_alerts = $active_alerts_data['total_active'];
                 <td><?php echo htmlspecialchars($row['time']); ?></td>
                 <td><?php echo htmlspecialchars($row['status']); ?></td>
                 <td>
-                  <a href="create_alert.php?id=<?php echo $row['id']; ?>" class="btn edit">Edit</a>
+                  <a href="../Afrar/create_alert.php?id=<?php echo $row['id']; ?>" class="btn edit">Edit</a>
                   
                   <button class="btn delete" onclick="deleteSystemAlert(<?php echo $row['id']; ?>)">Delete</button>
                 </td>
@@ -319,7 +337,8 @@ function sendSystemAlert(buttonElement, areaName, cutDate, cutTime) {
     buttonElement.disabled = true;
     buttonElement.innerHTML = '<i class="fa fa-spinner fa-spin" style="font-size:14px; color:white; margin:0;"></i> Sending...';
 
-    fetch('send_alerts_process.php', {
+    // 🔗 send_alerts_process.php இருக்கும் இடத்திற்கான பாதை (Afrar-க்குள் இருந்தால் '../Afrar/send_alerts_process.php' என மாற்றலாம்)
+fetch('../rukaimy/send_alerts_process.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -346,24 +365,25 @@ function sendSystemAlert(buttonElement, areaName, cutDate, cutTime) {
     });
 }
 
-// 🗑️ AJAX LIVE DELETE ENGINE (உங்க ஒரிஜினல் ஃபீடில் இணைக்கப்பட்டது தலா)
+// 🗑️ AJAX LIVE DELETE ENGINE (தனி ஃபைல் இல்லாமல் இங்கேயே செயல்படுகிறது)
 function deleteSystemAlert(alertId) {
     if (!confirm("Are you sure you want to permanently delete this power cut alert?")) {
         return;
     }
 
-    fetch('delete_alert.php', {
+    // அதே பக்கத்திற்கே (dashboard.php) தரவு அனுப்பப்படுகிறது
+    fetch('dashboard.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${alertId}`
+        body: `action=delete&id=${alertId}`
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
             alert("✅ Alert deleted successfully!");
-            // பேஜ் ரீஃப்ரெஷ் ஆகாமல் அந்த ரோவை மட்டும் அப்படியே மறைக்கிறோம் தலா
+            // பக்கம் ரீஃப்ரெஷ் ஆகாமல் அந்தத் தரவு வரிசை மட்டும் மறையும்
             document.getElementById(`row_${alertId}`).remove(); 
         } else {
             alert("❌ Error: " + data.message);
